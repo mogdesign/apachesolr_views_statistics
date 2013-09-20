@@ -5,6 +5,16 @@
  */
 
 /**
+ * Implements hook_views_api().
+ */
+function apachesolr_views_statistics_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'apachesolr_views_statistics') . '/views',
+  );
+}
+
+/**
  * Implements hook_exit().
  */
 function apachesolr_views_statistics_exit() {

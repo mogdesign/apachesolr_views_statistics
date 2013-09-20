@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file
+ * Apachesolr views extension.
+ */
+
+/**
+ * Implements hook_exit().
+ */
+function apachesolr_views_statistics_exit() {
+  if (module_exists('statistics')) {
+    // If page is node.
+    if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == NULL) {
+      // Load node object, which can be used as entity.
+      $node = menu_get_object();
+
+      // Check if node should be updated.
+      if (in_array($node->type, apachesolr_views_statistics_get_index_node_bundles())) {
+        // Update of solr node document.
+        module_invoke('apachesolr', 'entity_update', $node, 'node');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_apachesolr_index_document_build_node().
+ *
+ * Add statistics into document.
+ */
+function apachesolr_views_statistics_apachesolr_index_document_build_node(ApacheSolrDocument $document, $entity, $env_id) {
+  if (in_array($entity->type, apachesolr_views_statistics_get_index_node_bundles())) {
+    if (module_exists('statistics')) {
+      $statistics = statistics_get($entity->nid);
+      // Add the statistics totalcount to the solr node index.
+      if (!empty($statistics['totalcount'])) {
+        $document->addField('is_statistics_totalcount', $statistics['totalcount']);
+      }
+      // Add the statistics daycount to the solr node index.
+      if (!empty($statistics['daycount'])) {
+        $document->addField('is_statistics_daycount', $statistics['daycount']);
+      }
+    }
+  }
+}
+
+/**
+ * Load list of node bundles, which should be indexed.
+ */
+function apachesolr_views_statistics_get_index_node_bundles() {
+  module_load_include('inc', 'apachesolr', 'apachesolr.index');
+  $env_id = apachesolr_default_environment();
+  return apachesolr_get_index_bundles($env_id, 'node');
+}

@@ -1,0 +1,6 @@
+name = Apache Solr Views Statistics
+description = "Gives ability to filter using statistics data in apachesolr views."
+package = Search Toolkit
+dependencies[] = statistics
+dependencies[] = apachesolr_views
+core = 7.x

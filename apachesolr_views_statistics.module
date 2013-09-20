@@ -8,7 +8,8 @@
  * Implements hook_exit().
  */
 function apachesolr_views_statistics_exit() {
-  if (module_exists('statistics')) {
+  // If counter should be incremented each time content is viewed.
+  if (variable_get('statistics_count_content_views', 0) == 1) {
     // If page is node.
     if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == NULL) {
       // Load node object, which can be used as entity.
@@ -30,7 +31,8 @@ function apachesolr_views_statistics_exit() {
  */
 function apachesolr_views_statistics_apachesolr_index_document_build_node(ApacheSolrDocument $document, $entity, $env_id) {
   if (in_array($entity->type, apachesolr_views_statistics_get_index_node_bundles())) {
-    if (module_exists('statistics')) {
+    // If counter should be incremented each time content is viewed.
+    if (variable_get('statistics_count_content_views', 0) == 1) {
       $statistics = statistics_get($entity->nid);
       // Add the statistics totalcount to the solr node index.
       if (!empty($statistics['totalcount'])) {
